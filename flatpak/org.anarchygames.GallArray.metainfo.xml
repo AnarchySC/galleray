@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.anarchygames.GallArray</id>
+  <name>Gall-array</name>
+  <summary>Simple minimalist image gallery</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+
+  <description>
+    <p>
+      A dark-themed, minimalist image gallery for Linux with three view modes:
+    </p>
+    <ul>
+      <li>Gallery - Navigate images with Previous/Next or arrow keys</li>
+      <li>List - Browse files by name, double-click to view</li>
+      <li>Grid - Thumbnail view with hover magnification</li>
+    </ul>
+    <p>
+      Features a Recent Folders sidebar for quick access to previously viewed directories.
+      Supports JPG, PNG, GIF, BMP, WebP, and TIFF formats.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">org.anarchygames.GallArray.desktop</launchable>
+
+  <url type="homepage">https://anarchygames.org</url>
+  <url type="bugtracker">https://github.com/AnarchySC/galleray/issues</url>
+  <url type="donation">https://ko-fi.com/O5O71TOKUE</url>
+  <url type="vcs-browser">https://github.com/AnarchySC/galleray</url>
+
+  <developer id="org.anarchygames">
+    <name>AnarchyGames</name>
+  </developer>
+
+  <provides>
+    <binary>gall-array</binary>
+  </provides>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="1.0.0" date="2026-02-10">
+      <description>
+        <p>Initial release featuring:</p>
+        <ul>
+          <li>Three view modes: Gallery, List, and Grid</li>
+          <li>Hover magnification in Grid view</li>
+          <li>Recent Folders sidebar with history</li>
+          <li>Dark minimalist interface</li>
+          <li>Keyboard navigation support</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+
+  <categories>
+    <category>Graphics</category>
+    <category>Viewer</category>
+  </categories>
+
+  <keywords>
+    <keyword>gallery</keyword>
+    <keyword>image</keyword>
+    <keyword>viewer</keyword>
+    <keyword>photos</keyword>
+    <keyword>pictures</keyword>
+  </keywords>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Gallery view showing image navigation</caption>
+      <image>https://raw.githubusercontent.com/AnarchySC/galleray/master/screenshots/gallery-view.png</image>
+    </screenshot>
+  </screenshots>
+</component>

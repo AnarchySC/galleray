@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Gall-array
+Comment=Simple minimalist image gallery
+Exec=gall-array %F
+Icon=org.anarchygames.GallArray
+Terminal=false
+Type=Application
+Categories=Graphics;Viewer;
+MimeType=inode/directory;image/jpeg;image/png;image/gif;image/bmp;image/webp;image/tiff;
+Keywords=gallery;image;viewer;photos;pictures;

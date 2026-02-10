@@ -1,0 +1,38 @@
+app-id: org.anarchygames.GallArray
+runtime: org.kde.Platform
+runtime-version: '6.7'
+sdk: org.kde.Sdk
+command: gall-array
+
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --filesystem=home:ro
+  - --filesystem=/media:ro
+  - --filesystem=/mnt:ro
+  - --filesystem=/run/media:ro
+
+modules:
+  - name: gall-array
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 galleray.py ${FLATPAK_DEST}/bin/gall-array
+      - install -Dm644 galleray.png ${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/org.anarchygames.GallArray.png
+      - install -Dm644 org.anarchygames.GallArray.desktop ${FLATPAK_DEST}/share/applications/org.anarchygames.GallArray.desktop
+      - install -Dm644 org.anarchygames.GallArray.metainfo.xml ${FLATPAK_DEST}/share/metainfo/org.anarchygames.GallArray.metainfo.xml
+    sources:
+      - type: git
+        url: https://github.com/AnarchySC/galleray.git
+        branch: master
+      - type: file
+        path: org.anarchygames.GallArray.desktop
+      - type: file
+        path: org.anarchygames.GallArray.metainfo.xml
+
+  - name: python3-pyqt5
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=${FLATPAK_DEST} PyQt5
+    sources: []
