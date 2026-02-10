@@ -7,6 +7,10 @@ A simple, minimalist image gallery for Linux.
 ## Features
 
 - Dark grey modern interface
+- Three view modes:
+  - **Gallery** - Navigate with Previous/Next buttons or arrow keys
+  - **List** - File list, double-click to view
+  - **Grid** - Thumbnail grid with hover magnification preview
 - Browse images in any directory
 - Keyboard navigation (arrow keys or A/D)
 - Supports JPG, PNG, GIF, BMP, WebP, TIFF
