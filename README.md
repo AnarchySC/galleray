@@ -49,6 +49,14 @@ To add to your application menu:
 cp galleray.desktop ~/.local/share/applications/
 ```
 
+## Support
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/O5O71TOKUE)
+
 ## License
 
 MIT
+
+---
+
+Made by [anarchygames.org](https://anarchygames.org)

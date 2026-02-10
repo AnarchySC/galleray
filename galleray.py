@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QFileDialog, QSizePolicy
 )
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPixmap, QKeyEvent
+from PyQt5.QtCore import Qt, QSize, QUrl
+from PyQt5.QtGui import QPixmap, QKeyEvent, QDesktopServices
 
 SUPPORTED_FORMATS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.tif'}
 
@@ -101,6 +101,27 @@ class GalleryApp(QMainWindow):
 
         nav_layout.addStretch()
         layout.addLayout(nav_layout)
+
+        # Footer branding
+        footer = QHBoxLayout()
+        footer.addStretch()
+
+        website_link = QLabel('<a href="https://anarchygames.org" style="color: #666; text-decoration: none;">anarchygames.org</a>')
+        website_link.setOpenExternalLinks(True)
+        website_link.setStyleSheet("font-size: 11px;")
+        footer.addWidget(website_link)
+
+        separator = QLabel("  |  ")
+        separator.setStyleSheet("font-size: 11px; color: #444;")
+        footer.addWidget(separator)
+
+        donate_link = QLabel('<a href="https://ko-fi.com/O5O71TOKUE" style="color: #666; text-decoration: none;">Support on Ko-fi</a>')
+        donate_link.setOpenExternalLinks(True)
+        donate_link.setStyleSheet("font-size: 11px;")
+        footer.addWidget(donate_link)
+
+        footer.addStretch()
+        layout.addLayout(footer)
 
     def open_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Image Folder")
