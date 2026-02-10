@@ -1,0 +1,60 @@
+name: gall-array
+version: '1.0.0'
+title: Gall-array
+summary: Simple minimalist image gallery for Linux
+description: |
+  A dark-themed, minimalist image gallery with three view modes:
+
+  - Gallery: Navigate images with Previous/Next or arrow keys
+  - List: Browse files by name, double-click to view
+  - Grid: Thumbnail view with hover magnification
+
+  Supports JPG, PNG, GIF, BMP, WebP, and TIFF formats.
+
+license: MIT
+website: https://anarchygames.org
+source-code: https://github.com/AnarchySC/galleray
+issues: https://github.com/AnarchySC/galleray/issues
+donation: https://ko-fi.com/O5O71TOKUE
+contact: https://anarchygames.org
+
+grade: stable
+confinement: strict
+base: core24
+
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+
+apps:
+  gall-array:
+    command: bin/gall-array
+    desktop: usr/share/applications/gall-array.desktop
+    extensions: [gnome]
+    plugs:
+      - home
+      - removable-media
+
+parts:
+  gall-array:
+    plugin: python
+    source: .
+    python-packages:
+      - PyQt5
+    stage:
+      - -galleray.desktop
+      - -install.sh
+      - -snap
+    override-build: |
+      craftctl default
+      mkdir -p $CRAFT_PART_INSTALL/bin
+      cp galleray.py $CRAFT_PART_INSTALL/bin/gall-array
+      chmod 755 $CRAFT_PART_INSTALL/bin/gall-array
+
+  desktop-file:
+    plugin: dump
+    source: snap/gui
+    organize:
+      gall-array.desktop: usr/share/applications/gall-array.desktop
+      gall-array.png: usr/share/icons/hicolor/256x256/apps/gall-array.png

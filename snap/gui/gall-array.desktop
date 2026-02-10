@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Gall-array
+Comment=Simple minimalist image gallery
+Exec=gall-array %F
+Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/gall-array.png
+Terminal=false
+Type=Application
+Categories=Graphics;Viewer;
+MimeType=inode/directory;image/jpeg;image/png;image/gif;image/bmp;image/webp;image/tiff;

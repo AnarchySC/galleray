@@ -17,3 +17,9 @@ ENV/
 *.swo
 *~
 .DS_Store
+
+# Snap build artifacts
+*.snap
+parts/
+prime/
+stage/
