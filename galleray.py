@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QLabel, QFileDialog, QSizePolicy
 )
 from PyQt5.QtCore import Qt, QSize, QUrl
-from PyQt5.QtGui import QPixmap, QKeyEvent, QDesktopServices
+from PyQt5.QtGui import QPixmap, QKeyEvent, QDesktopServices, QIcon
 
 SUPPORTED_FORMATS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.tif'}
 
@@ -53,6 +53,11 @@ class GalleryApp(QMainWindow):
         self.setWindowTitle("Gall-array")
         self.setMinimumSize(800, 600)
         self.setStyleSheet(DARK_STYLE)
+
+        # Set window icon
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'galleray.png')
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
 
         central = QWidget()
         self.setCentralWidget(central)
