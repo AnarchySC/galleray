@@ -9,10 +9,11 @@ from PyQt5.QtWidgets import (
     QPushButton, QLabel, QFileDialog, QSizePolicy, QStackedWidget,
     QListWidget, QListWidgetItem, QScrollArea, QGridLayout, QFrame
 )
-from PyQt5.QtCore import Qt, QSize, QUrl, QEvent, QTimer
+from PyQt5.QtCore import Qt, QSize, QUrl, QEvent, QTimer, QSettings
 from PyQt5.QtGui import QPixmap, QKeyEvent, QDesktopServices, QIcon
 
 SUPPORTED_FORMATS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.tif'}
+MAX_RECENT_DIRS = 15
 
 DARK_STYLE = """
 QMainWindow, QWidget {
@@ -119,11 +120,30 @@ class GalleryApp(QMainWindow):
         self.current_index = 0
         self.current_view = 'gallery'
         self.thumbnail_widgets = []
+        self.settings = QSettings('anarchygames', 'gall-array')
+        self.recent_dirs = self.load_recent_dirs()
         self.init_ui()
+
+    def load_recent_dirs(self):
+        dirs = self.settings.value('recent_dirs', [])
+        if isinstance(dirs, str):
+            dirs = [dirs] if dirs else []
+        return dirs[:MAX_RECENT_DIRS]
+
+    def save_recent_dirs(self):
+        self.settings.setValue('recent_dirs', self.recent_dirs)
+
+    def add_recent_dir(self, folder):
+        if folder in self.recent_dirs:
+            self.recent_dirs.remove(folder)
+        self.recent_dirs.insert(0, folder)
+        self.recent_dirs = self.recent_dirs[:MAX_RECENT_DIRS]
+        self.save_recent_dirs()
+        self.update_recent_list()
 
     def init_ui(self):
         self.setWindowTitle("Gall-array")
-        self.setMinimumSize(900, 700)
+        self.setMinimumSize(1100, 700)
         self.setStyleSheet(DARK_STYLE)
 
         # Set window icon
@@ -133,8 +153,14 @@ class GalleryApp(QMainWindow):
 
         central = QWidget()
         self.setCentralWidget(central)
-        layout = QVBoxLayout(central)
-        layout.setContentsMargins(20, 20, 20, 20)
+        main_layout = QHBoxLayout(central)
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(15)
+
+        # Left side - main content
+        left_container = QWidget()
+        layout = QVBoxLayout(left_container)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(15)
 
         # Top bar
@@ -274,6 +300,85 @@ class GalleryApp(QMainWindow):
         footer.addStretch()
         layout.addLayout(footer)
 
+        main_layout.addWidget(left_container, 1)
+
+        # Right sidebar - Recent directories
+        self.recent_panel = QFrame()
+        self.recent_panel.setFixedWidth(220)
+        self.recent_panel.setStyleSheet("""
+            QFrame {
+                background-color: #252525;
+                border-radius: 8px;
+            }
+        """)
+        recent_layout = QVBoxLayout(self.recent_panel)
+        recent_layout.setContentsMargins(12, 12, 12, 12)
+        recent_layout.setSpacing(8)
+
+        recent_header = QLabel("Recent Folders")
+        recent_header.setStyleSheet("font-size: 13px; font-weight: bold; color: #ccc; padding: 4px;")
+        recent_layout.addWidget(recent_header)
+
+        self.recent_list = QListWidget()
+        self.recent_list.setStyleSheet("""
+            QListWidget {
+                background-color: transparent;
+                border: none;
+                padding: 0;
+            }
+            QListWidget::item {
+                color: #aaa;
+                padding: 6px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+            }
+            QListWidget::item:hover {
+                background-color: #3d3d3d;
+                color: #e0e0e0;
+            }
+            QListWidget::item:selected {
+                background-color: #4a4a4a;
+            }
+        """)
+        self.recent_list.itemClicked.connect(self.recent_dir_clicked)
+        recent_layout.addWidget(self.recent_list, 1)
+
+        clear_btn = QPushButton("Clear History")
+        clear_btn.setStyleSheet("""
+            QPushButton {
+                padding: 8px 12px;
+                font-size: 11px;
+                background-color: #333;
+            }
+        """)
+        clear_btn.clicked.connect(self.clear_recent)
+        recent_layout.addWidget(clear_btn)
+
+        main_layout.addWidget(self.recent_panel)
+
+        self.update_recent_list()
+
+    def update_recent_list(self):
+        self.recent_list.clear()
+        for folder in self.recent_dirs:
+            if os.path.isdir(folder):
+                # Show just the folder name, store full path
+                display_name = os.path.basename(folder) or folder
+                item = QListWidgetItem(display_name)
+                item.setData(Qt.UserRole, folder)
+                item.setToolTip(folder)
+                self.recent_list.addItem(item)
+
+    def recent_dir_clicked(self, item):
+        folder = item.data(Qt.UserRole)
+        if folder and os.path.isdir(folder):
+            self.load_images(folder)
+
+    def clear_recent(self):
+        self.recent_dirs = []
+        self.save_recent_dirs()
+        self.update_recent_list()
+
     def set_view_mode(self, mode):
         self.current_view = mode
         self.gallery_btn.setChecked(mode == 'gallery')
@@ -300,6 +405,9 @@ class GalleryApp(QMainWindow):
             if Path(f).suffix.lower() in SUPPORTED_FORMATS
         ])
         self.current_index = 0
+
+        # Add to recent dirs
+        self.add_recent_dir(folder)
 
         if self.images:
             self.show_image()
