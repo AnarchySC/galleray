@@ -1,8 +1,8 @@
-# Galleray
+# Gall-array
 
 A simple, minimalist image gallery for Linux.
 
-![Galleray Icon](galleray.png)
+![Gall-array Icon](galleray.png)
 
 ## Features
 

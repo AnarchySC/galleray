@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Galleray - A simple minimalist image gallery for Linux."""
+"""Gall-array - A simple minimalist image gallery for Linux."""
 
 import sys
 import os
@@ -50,7 +50,7 @@ class GalleryApp(QMainWindow):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("Galleray")
+        self.setWindowTitle("Gall-array")
         self.setMinimumSize(800, 600)
         self.setStyleSheet(DARK_STYLE)
 
