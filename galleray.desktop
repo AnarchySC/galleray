@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Galleray
+Comment=Simple minimalist image gallery
+Exec=python3 /opt/galleray/galleray.py %F
+Icon=/opt/galleray/galleray.png
+Terminal=false
+Type=Application
+Categories=Graphics;Viewer;
+MimeType=inode/directory;
