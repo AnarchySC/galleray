@@ -1,5 +1,8 @@
 # Gall-array
 
+[![gall-array](https://snapcraft.io/gall-array/badge.svg)](https://snapcraft.io/gall-array)
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/gall-array)
+
 A simple, minimalist image gallery for Linux.
 
 ![Gall-array Icon](galleray.png)
@@ -17,6 +20,12 @@ A simple, minimalist image gallery for Linux.
 
 ## Installation
 
+### Snap Store (Recommended)
+```bash
+sudo snap install gall-array
+```
+
+### From Source
 ```bash
 # Install dependency
 pip install PyQt5
