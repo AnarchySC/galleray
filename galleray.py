@@ -7,7 +7,8 @@ from pathlib import Path
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QFileDialog, QSizePolicy, QStackedWidget,
-    QListWidget, QListWidgetItem, QScrollArea, QGridLayout, QFrame
+    QListWidget, QListWidgetItem, QScrollArea, QGridLayout, QFrame,
+    QMenu
 )
 from PyQt5.QtCore import Qt, QSize, QUrl, QEvent, QTimer, QSettings
 from PyQt5.QtGui import QPixmap, QKeyEvent, QDesktopServices, QIcon
@@ -120,8 +121,11 @@ class GalleryApp(QMainWindow):
         self.current_index = 0
         self.current_view = 'gallery'
         self.thumbnail_widgets = []
+        self.current_folder = None
+        self.sort_method = 'name_asc'
         self.settings = QSettings('anarchygames', 'gall-array')
         self.recent_dirs = self.load_recent_dirs()
+        self.sort_method = self.settings.value('sort_method', 'name_asc')
         self.init_ui()
 
     def load_recent_dirs(self):
@@ -187,6 +191,50 @@ class GalleryApp(QMainWindow):
         self.grid_btn.setCheckable(True)
         self.grid_btn.clicked.connect(lambda: self.set_view_mode('grid'))
         top_bar.addWidget(self.grid_btn)
+
+        top_bar.addSpacing(20)
+
+        # Sort button with dropdown
+        self.sort_btn = QPushButton("Sort")
+        self.sort_menu = QMenu(self)
+        self.sort_menu.setStyleSheet("""
+            QMenu {
+                background-color: #2d2d2d;
+                border: 1px solid #444;
+                border-radius: 4px;
+                padding: 4px;
+            }
+            QMenu::item {
+                color: #e0e0e0;
+                padding: 8px 20px;
+                border-radius: 4px;
+            }
+            QMenu::item:selected {
+                background-color: #3d3d3d;
+            }
+            QMenu::item:checked {
+                background-color: #4a4a4a;
+            }
+        """)
+
+        self.sort_actions = {}
+        sort_options = [
+            ('name_asc', 'Name (A-Z)'),
+            ('name_desc', 'Name (Z-A)'),
+            ('date_newest', 'Date (Newest)'),
+            ('date_oldest', 'Date (Oldest)'),
+            ('size_largest', 'Size (Largest)'),
+            ('size_smallest', 'Size (Smallest)'),
+        ]
+        for key, label in sort_options:
+            action = self.sort_menu.addAction(label)
+            action.setCheckable(True)
+            action.setChecked(key == self.sort_method)
+            action.triggered.connect(lambda checked, k=key: self.set_sort_method(k))
+            self.sort_actions[key] = action
+
+        self.sort_btn.setMenu(self.sort_menu)
+        top_bar.addWidget(self.sort_btn)
 
         top_bar.addStretch()
 
@@ -379,6 +427,33 @@ class GalleryApp(QMainWindow):
         self.save_recent_dirs()
         self.update_recent_list()
 
+    def set_sort_method(self, method):
+        self.sort_method = method
+        self.settings.setValue('sort_method', method)
+
+        # Update checkmarks
+        for key, action in self.sort_actions.items():
+            action.setChecked(key == method)
+
+        # Re-sort current images
+        if self.current_folder:
+            self.load_images(self.current_folder, add_to_recent=False)
+
+    def sort_images(self, image_paths):
+        if self.sort_method == 'name_asc':
+            return sorted(image_paths, key=lambda p: os.path.basename(p).lower())
+        elif self.sort_method == 'name_desc':
+            return sorted(image_paths, key=lambda p: os.path.basename(p).lower(), reverse=True)
+        elif self.sort_method == 'date_newest':
+            return sorted(image_paths, key=lambda p: os.path.getmtime(p), reverse=True)
+        elif self.sort_method == 'date_oldest':
+            return sorted(image_paths, key=lambda p: os.path.getmtime(p))
+        elif self.sort_method == 'size_largest':
+            return sorted(image_paths, key=lambda p: os.path.getsize(p), reverse=True)
+        elif self.sort_method == 'size_smallest':
+            return sorted(image_paths, key=lambda p: os.path.getsize(p))
+        return image_paths
+
     def set_view_mode(self, mode):
         self.current_view = mode
         self.gallery_btn.setChecked(mode == 'gallery')
@@ -399,15 +474,18 @@ class GalleryApp(QMainWindow):
         if folder:
             self.load_images(folder)
 
-    def load_images(self, folder):
-        self.images = sorted([
+    def load_images(self, folder, add_to_recent=True):
+        self.current_folder = folder
+        image_paths = [
             os.path.join(folder, f) for f in os.listdir(folder)
             if Path(f).suffix.lower() in SUPPORTED_FORMATS
-        ])
+        ]
+        self.images = self.sort_images(image_paths)
         self.current_index = 0
 
         # Add to recent dirs
-        self.add_recent_dir(folder)
+        if add_to_recent:
+            self.add_recent_dir(folder)
 
         if self.images:
             self.show_image()
