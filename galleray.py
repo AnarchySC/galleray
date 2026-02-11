@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QFileDialog, QSizePolicy, QStackedWidget,
     QListWidget, QListWidgetItem, QScrollArea, QGridLayout, QFrame,
-    QMenu
+    QMenu, QMessageBox
 )
 from PyQt5.QtCore import Qt, QSize, QUrl, QEvent, QTimer, QSettings
 from PyQt5.QtGui import QPixmap, QKeyEvent, QDesktopServices, QIcon
@@ -270,6 +270,28 @@ class GalleryApp(QMainWindow):
         self.prev_btn.clicked.connect(self.prev_image)
         self.prev_btn.setEnabled(False)
         nav_layout.addWidget(self.prev_btn)
+
+        self.delete_btn = QPushButton("Delete")
+        self.delete_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #5c2626;
+                color: #e0e0e0;
+            }
+            QPushButton:hover {
+                background-color: #7a3333;
+            }
+            QPushButton:pressed {
+                background-color: #8a4444;
+            }
+            QPushButton:disabled {
+                background-color: #3a2020;
+                color: #666666;
+            }
+        """)
+        self.delete_btn.clicked.connect(self.delete_current_image)
+        self.delete_btn.setEnabled(False)
+        nav_layout.addWidget(self.delete_btn)
+
         self.next_btn = QPushButton("Next")
         self.next_btn.clicked.connect(self.next_image)
         self.next_btn.setEnabled(False)
@@ -567,6 +589,44 @@ class GalleryApp(QMainWindow):
         has_images = len(self.images) > 0
         self.prev_btn.setEnabled(has_images and self.current_index > 0)
         self.next_btn.setEnabled(has_images and self.current_index < len(self.images) - 1)
+        self.delete_btn.setEnabled(has_images)
+
+    def delete_current_image(self):
+        if not self.images:
+            return
+
+        path = self.images[self.current_index]
+        filename = os.path.basename(path)
+
+        reply = QMessageBox.question(
+            self,
+            "Delete Image",
+            f"Are you sure you want to delete:\n{filename}?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            try:
+                os.remove(path)
+                self.images.pop(self.current_index)
+
+                if not self.images:
+                    self.image_label.setPixmap(QPixmap())
+                    self.image_label.setText("No images in folder")
+                    self.counter_label.setText("")
+                    self.filename_label.setText("")
+                    self.update_nav_state()
+                    self.populate_list()
+                    self.populate_grid()
+                else:
+                    if self.current_index >= len(self.images):
+                        self.current_index = len(self.images) - 1
+                    self.show_image()
+                    self.populate_list()
+                    self.populate_grid()
+            except OSError as e:
+                QMessageBox.warning(self, "Error", f"Could not delete file:\n{e}")
 
     def prev_image(self):
         if self.current_index > 0:
